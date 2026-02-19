@@ -1,17 +1,23 @@
 ﻿using SearchEngine.Domain.Documents;
 using SearchEngine.Domain.Indexing;
 
-namespace SearchEngine.Application.Abstractions.Persistence;
-
 public interface IIndexRepository
 {
-    Task AddAsync(IndexEntry entry, CancellationToken ct);
+    Task AddAsync(IndexEntry entry, CancellationToken cancellationToken = default);
 
-    Task<IEnumerable<IndexEntry>> GetByDocumentIdAsync(
+    Task<IReadOnlyList<IndexEntry>> GetByTermIdAsync(
+        TermId termId,
+        CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<IndexEntry>> GetByDocumentIdAsync(
         DocumentId documentId,
-        CancellationToken ct);
+        CancellationToken cancellationToken = default);
 
     Task DeleteByDocumentIdAsync(
         DocumentId documentId,
-        CancellationToken ct);
+        CancellationToken cancellationToken = default);
+
+    Task DeleteByTermIdAsync(
+        TermId termId,
+        CancellationToken cancellationToken = default);
 }

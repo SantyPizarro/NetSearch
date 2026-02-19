@@ -1,10 +1,10 @@
-﻿using SearchEngine.Domain.Indexing;
-
-namespace SearchEngine.Application.Abstractions.Persistence;
-
-public interface ITermRepository
+﻿public interface ITermRepository
 {
-    Task<Term?> GetByValueAsync(string value, CancellationToken ct);
-    Task AddAsync(Term term, CancellationToken ct);
-    Task UpdateAsync(Term term, CancellationToken ct);
+    Task<Term?> GetByValueAsync(string value, CancellationToken cancellationToken = default);
+
+    Task<Term?> GetByIdAsync(TermId id, CancellationToken cancellationToken = default);
+
+    Task AddAsync(Term term, CancellationToken cancellationToken = default);
+
+    Task UpdateAsync(Term term, CancellationToken cancellationToken = default);
 }
