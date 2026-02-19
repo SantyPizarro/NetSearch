@@ -1,9 +1,32 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36705.20 d17.14
+VisualStudioVersion = 17.14.36705.20
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchEngine.Api", "SearchEngine.Api\SearchEngine.Api.csproj", "{D3010EB7-2A24-48E4-937D-4C68D552A926}"
+	ProjectSection(ProjectDependencies) = postProject
+		{009E22B8-7F7D-454D-AE2B-1A5B0C1CD9A3} = {009E22B8-7F7D-454D-AE2B-1A5B0C1CD9A3}
+		{87CB81AA-710B-4E7D-B9BA-89EB114ABAC3} = {87CB81AA-710B-4E7D-B9BA-89EB114ABAC3}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchEngine.Application", "SearchEngine.Application\SearchEngine.Application.csproj", "{87CB81AA-710B-4E7D-B9BA-89EB114ABAC3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EC4A4008-D754-4CC3-B383-226ECCE3BC34} = {EC4A4008-D754-4CC3-B383-226ECCE3BC34}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchEngine.Domain", "SearchEngine.Domain\SearchEngine.Domain.csproj", "{EC4A4008-D754-4CC3-B383-226ECCE3BC34}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchEngine.Infrastructure", "SearchEngine.Infrastructure\SearchEngine.Infrastructure.csproj", "{009E22B8-7F7D-454D-AE2B-1A5B0C1CD9A3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{87CB81AA-710B-4E7D-B9BA-89EB114ABAC3} = {87CB81AA-710B-4E7D-B9BA-89EB114ABAC3}
+		{EC4A4008-D754-4CC3-B383-226ECCE3BC34} = {EC4A4008-D754-4CC3-B383-226ECCE3BC34}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchEngine.Tests", "SearchEngine.Tests\SearchEngine.Tests.csproj", "{7ECE2E44-F13C-4F65-9511-3C3B6FE6143A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{87CB81AA-710B-4E7D-B9BA-89EB114ABAC3} = {87CB81AA-710B-4E7D-B9BA-89EB114ABAC3}
+		{EC4A4008-D754-4CC3-B383-226ECCE3BC34} = {EC4A4008-D754-4CC3-B383-226ECCE3BC34}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +38,22 @@ Global
 		{D3010EB7-2A24-48E4-937D-4C68D552A926}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D3010EB7-2A24-48E4-937D-4C68D552A926}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D3010EB7-2A24-48E4-937D-4C68D552A926}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87CB81AA-710B-4E7D-B9BA-89EB114ABAC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87CB81AA-710B-4E7D-B9BA-89EB114ABAC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87CB81AA-710B-4E7D-B9BA-89EB114ABAC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87CB81AA-710B-4E7D-B9BA-89EB114ABAC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC4A4008-D754-4CC3-B383-226ECCE3BC34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC4A4008-D754-4CC3-B383-226ECCE3BC34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC4A4008-D754-4CC3-B383-226ECCE3BC34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC4A4008-D754-4CC3-B383-226ECCE3BC34}.Release|Any CPU.Build.0 = Release|Any CPU
+		{009E22B8-7F7D-454D-AE2B-1A5B0C1CD9A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{009E22B8-7F7D-454D-AE2B-1A5B0C1CD9A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{009E22B8-7F7D-454D-AE2B-1A5B0C1CD9A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{009E22B8-7F7D-454D-AE2B-1A5B0C1CD9A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7ECE2E44-F13C-4F65-9511-3C3B6FE6143A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7ECE2E44-F13C-4F65-9511-3C3B6FE6143A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7ECE2E44-F13C-4F65-9511-3C3B6FE6143A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7ECE2E44-F13C-4F65-9511-3C3B6FE6143A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

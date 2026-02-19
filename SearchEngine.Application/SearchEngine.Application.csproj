@@ -6,4 +6,14 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Abstractions\Persistence\" />
+    <Folder Include="Abstractions\Services\" />
+    <Folder Include="Documents\Commands\" />
+    <Folder Include="Documents\Handlers\" />
+    <Folder Include="Indexing\" />
+    <Folder Include="Search\Handlers\" />
+    <Folder Include="Search\Queries\" />
+  </ItemGroup>
+
 </Project>
