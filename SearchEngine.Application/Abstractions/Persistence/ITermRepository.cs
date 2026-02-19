@@ -1,4 +1,6 @@
-﻿public interface ITermRepository
+﻿using SearchEngine.Domain.Indexing;
+
+public interface ITermRepository
 {
     Task<Term?> GetByValueAsync(string value, CancellationToken cancellationToken = default);
 

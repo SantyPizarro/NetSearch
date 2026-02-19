@@ -1,12 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SearchEngine.Application.Abstractions.Persistence;
 using SearchEngine.Domain.Documents;
 using SearchEngine.Domain.Indexing;
-using System.Collections.Generic;
-using System.Reflection.Emit;
 
 namespace SearchEngine.Infrastructure.Persistence;
 
-public sealed class SearchEngineDbContext : DbContext
+public sealed class SearchEngineDbContext
+    : DbContext, IUnitOfWork
 {
     public DbSet<Document> Documents => Set<Document>();
     public DbSet<Term> Terms => Set<Term>();
@@ -23,5 +23,11 @@ public sealed class SearchEngineDbContext : DbContext
             typeof(SearchEngineDbContext).Assembly);
 
         base.OnModelCreating(modelBuilder);
+    }
+
+    public async Task<int> SaveChangesAsync(
+        CancellationToken cancellationToken = default)
+    {
+        return await base.SaveChangesAsync(cancellationToken);
     }
 }
