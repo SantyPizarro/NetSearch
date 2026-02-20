@@ -1,6 +1,8 @@
 ﻿namespace SearchEngine.Api.Contracts.Responses;
 
-public sealed record SearchResponse(
-    Guid DocumentId,
-    string Title,
-    double Score);
+public sealed class SearchResponse
+{
+    public Guid DocumentId { get; init; }
+    public string Title { get; init; } = default!;
+    public double Score { get; init; }
+}

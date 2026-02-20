@@ -1,10 +1,12 @@
-﻿using SearchEngine.Application.Abstractions.Services;
+﻿using MediatR;
+using SearchEngine.Application.Abstractions.Services;
 using SearchEngine.Application.Search.Queries;
 using SearchEngine.Domain.Search;
 
 namespace SearchEngine.Application.Search.Handlers;
 
 public sealed class SearchDocumentsHandler
+    : IRequestHandler<SearchDocumentsQuery, IReadOnlyCollection<SearchResult>>
 {
     private readonly ISearchService _searchService;
     private readonly ITokenizer _tokenizer;
@@ -18,21 +20,15 @@ public sealed class SearchDocumentsHandler
     }
 
     public async Task<IReadOnlyCollection<SearchResult>> Handle(
-        SearchDocumentsQuery query,
+        SearchDocumentsQuery request,
         CancellationToken cancellationToken)
     {
-        var terms = _tokenizer.Tokenize(query.Query);
-
-        var operatorType = query.Operator.ToUpper() switch
-        {
-            "OR" => OperatorType.Or,
-            _ => OperatorType.And
-        };
+        var terms = _tokenizer.Tokenize(request.Query);
 
         var searchQuery = new SearchQuery(
-            query.Query,
+            request.Query,
             terms,
-            operatorType);
+            request.Operator);
 
         return await _searchService.SearchAsync(searchQuery, cancellationToken);
     }

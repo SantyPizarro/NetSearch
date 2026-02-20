@@ -2,10 +2,6 @@
 using SearchEngine.Application.Abstractions.Services;
 using SearchEngine.Domain.Indexing;
 using SearchEngine.Domain.Search;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using System.Collections.Generic;
-using System.Linq;
-
 
 namespace SearchEngine.Infrastructure.Search;
 
@@ -32,10 +28,17 @@ public sealed class SearchService : ISearchService
         SearchQuery query,
         CancellationToken cancellationToken = default)
     {
+        if (query.Terms.Count == 0)
+            return Array.Empty<SearchResult>();
+
+        // 1️⃣ Resolver entidades Term
         var termEntities = new List<Term>();
+
         foreach (var termValue in query.Terms)
         {
-            var term = await _termRepository.GetByValueAsync(termValue, cancellationToken);
+            var term = await _termRepository
+                .GetByValueAsync(termValue, cancellationToken);
+
             if (term is not null)
                 termEntities.Add(term);
         }
@@ -43,30 +46,47 @@ public sealed class SearchService : ISearchService
         if (termEntities.Count == 0)
             return Array.Empty<SearchResult>();
 
+        // 2️⃣ Obtener entradas del índice
         var allEntries = new List<IndexEntry>();
+
         foreach (var term in termEntities)
         {
-            var entries = await _indexRepository.GetByTermIdAsync(term.Id, cancellationToken);
+            var entries = await _indexRepository
+                .GetByTermIdAsync(term.Id, cancellationToken);
+
             allEntries.AddRange(entries);
         }
 
+        if (allEntries.Count == 0)
+            return Array.Empty<SearchResult>();
+
+        // 3️⃣ Agrupar por documento
         var groupedByDocument = allEntries
             .GroupBy(e => e.DocumentId);
 
-        var totalDocuments = await _documentRepository.CountAsync(cancellationToken);
+        var totalDocuments = await _documentRepository
+            .CountAsync(cancellationToken);
+
+        if (totalDocuments == 0)
+            return Array.Empty<SearchResult>();
 
         var results = new List<SearchResult>();
 
         foreach (var group in groupedByDocument)
         {
+            // 4️⃣ Operador AND
             if (query.Operator == OperatorType.And)
             {
-                var containsAll = termEntities.All(t => group.Any(e => e.TermId == t.Id));
-                if (!containsAll)
+                var containsAllTerms = termEntities
+                    .All(t => group.Any(e => e.TermId == t.Id));
+
+                if (!containsAllTerms)
                     continue;
             }
 
-            var document = await _documentRepository.GetByIdAsync(group.Key, cancellationToken);
+            var document = await _documentRepository
+                .GetByIdAsync(group.Key, cancellationToken);
+
             if (document is null)
                 continue;
 
@@ -74,10 +94,13 @@ public sealed class SearchService : ISearchService
 
             foreach (var term in termEntities)
             {
-                var entry = group.FirstOrDefault(e => e.TermId == term.Id);
+                var entry = group
+                    .FirstOrDefault(e => e.TermId == term.Id);
+
                 if (entry is not null)
                 {
-                    score += _rankingStrategy.CalculateScore(term, entry.TermFrequency, totalDocuments);
+                    score += _rankingStrategy
+                        .CalculateScore(term, entry.TermFrequency, totalDocuments);
                 }
             }
 

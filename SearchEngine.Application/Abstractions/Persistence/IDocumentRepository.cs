@@ -15,4 +15,5 @@ public interface IDocumentRepository
     void Remove(Document document);
 
     Task<int> CountAsync(CancellationToken cancellationToken = default);
+
 }
