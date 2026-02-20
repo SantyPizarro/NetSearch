@@ -25,47 +25,45 @@ public sealed class SearchService : ISearchService
     }
 
     public async Task<IReadOnlyCollection<SearchResult>> SearchAsync(
-        SearchQuery query,
-        CancellationToken cancellationToken = default)
+     SearchQuery query,
+     CancellationToken cancellationToken = default)
     {
         if (query.Terms.Count == 0)
             return Array.Empty<SearchResult>();
 
-        var termEntities = new List<Term>();
-
-        foreach (var termValue in query.Terms)
-        {
-            var term = await _termRepository
-                .GetByValueAsync(termValue, cancellationToken);
-
-            if (term is not null)
-                termEntities.Add(term);
-        }
+        var termEntities = await _termRepository
+            .GetByValuesAsync(query.Terms, cancellationToken);
 
         if (termEntities.Count == 0)
             return Array.Empty<SearchResult>();
 
-        var allEntries = new List<IndexEntry>();
-
-        foreach (var term in termEntities)
-        {
-            var entries = await _indexRepository
-                .GetByTermIdAsync(term.Id, cancellationToken);
-
-            allEntries.AddRange(entries);
-        }
+        var allEntries = await _indexRepository
+            .GetByTermIdsAsync(
+                termEntities.Select(t => t.Id),
+                cancellationToken);
 
         if (allEntries.Count == 0)
             return Array.Empty<SearchResult>();
 
         var groupedByDocument = allEntries
-            .GroupBy(e => e.DocumentId);
+            .GroupBy(e => e.DocumentId)
+            .ToList();
 
         var totalDocuments = await _documentRepository
             .CountAsync(cancellationToken);
 
         if (totalDocuments == 0)
             return Array.Empty<SearchResult>();
+
+        var documentIds = groupedByDocument
+            .Select(g => g.Key)
+            .ToList();
+
+        var documents = await _documentRepository
+            .GetByIdsAsync(documentIds, cancellationToken);
+
+        var documentDictionary = documents
+            .ToDictionary(d => d.Id);
 
         var results = new List<SearchResult>();
 
@@ -80,10 +78,7 @@ public sealed class SearchService : ISearchService
                     continue;
             }
 
-            var document = await _documentRepository
-                .GetByIdAsync(group.Key, cancellationToken);
-
-            if (document is null)
+            if (!documentDictionary.TryGetValue(group.Key, out var document))
                 continue;
 
             double score = 0;

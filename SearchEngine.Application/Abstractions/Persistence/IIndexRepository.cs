@@ -5,8 +5,8 @@ public interface IIndexRepository
 {
     Task AddAsync(IndexEntry entry, CancellationToken cancellationToken = default);
 
-    Task<IReadOnlyList<IndexEntry>> GetByTermIdAsync(
-        TermId termId,
+    Task<List<IndexEntry>> GetByTermIdsAsync(
+        IEnumerable<TermId> termIds,
         CancellationToken cancellationToken = default);
 
     Task<IReadOnlyList<IndexEntry>> GetByDocumentIdAsync(
@@ -20,4 +20,6 @@ public interface IIndexRepository
     Task DeleteByTermIdAsync(
         TermId termId,
         CancellationToken cancellationToken = default);
+
+
 }

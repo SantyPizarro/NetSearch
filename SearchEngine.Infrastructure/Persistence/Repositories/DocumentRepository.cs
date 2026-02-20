@@ -22,6 +22,16 @@ internal sealed class DocumentRepository : IDocumentRepository
             .Include(d => d.Tags)
             .FirstOrDefaultAsync(d => d.Id == id, cancellationToken);
     }
+    public async Task<List<Document>> GetByIdsAsync(
+       IEnumerable<DocumentId> ids,
+       CancellationToken cancellationToken = default)
+    {
+        var values = ids.Select(x => x.Value).ToList();
+
+        return await _context.Documents
+            .Where(d => values.Contains(d.Id.Value))
+            .ToListAsync(cancellationToken);
+    }
 
     public async Task AddAsync(
         Document document,

@@ -7,6 +7,9 @@ namespace SearchEngine.Application.Abstractions.Persistence;
 public interface IDocumentRepository
 {
     Task<Document?> GetByIdAsync(DocumentId id, CancellationToken cancellationToken = default);
+    Task<List<Document>> GetByIdsAsync(
+    IEnumerable<DocumentId> ids,
+    CancellationToken cancellationToken = default);
 
     Task AddAsync(Document document, CancellationToken cancellationToken = default);
 

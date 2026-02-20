@@ -21,12 +21,14 @@ internal sealed class IndexRepository : IIndexRepository
         await _context.IndexEntries.AddAsync(entry, cancellationToken);
     }
 
-    public async Task<IReadOnlyList<IndexEntry>> GetByTermIdAsync(
-        TermId termId,
-        CancellationToken cancellationToken = default)
+    public async Task<List<IndexEntry>> GetByTermIdsAsync(
+           IEnumerable<TermId> termIds,
+           CancellationToken cancellationToken = default)
     {
+        var ids = termIds.Select(x => x.Value).ToList();
+
         return await _context.IndexEntries
-            .Where(e => e.TermId == termId)
+            .Where(e => ids.Contains(e.TermId.Value))
             .ToListAsync(cancellationToken);
     }
 
