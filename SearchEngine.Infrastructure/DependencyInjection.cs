@@ -1,9 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SearchEngine.Application.Abstractions.Persistence;
+using SearchEngine.Application.Abstractions.Services;
 using SearchEngine.Infrastructure.Persistence;
 using SearchEngine.Infrastructure.Persistence.Repositories;
+using SearchEngine.Infrastructure.Search;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using Microsoft.EntityFrameworkCore;
+using SearchEngine.Infrastructure.Indexing;
 
 namespace SearchEngine.Infrastructure;
 
@@ -20,6 +24,13 @@ public static class DependencyInjection
         services.AddScoped<IDocumentRepository, DocumentRepository>();
         services.AddScoped<ITermRepository, TermRepository>();
         services.AddScoped<IIndexRepository, IndexRepository>();
+
+        services.AddScoped<IIndexingService, IndexingService>();
+
+        services.AddScoped<ITokenizer, Tokenizer>();
+        services.AddScoped<IRankingStrategy, TfIdfRankingStrategy>();
+
+        services.AddScoped<ISearchService, SearchService>();
 
         services.AddScoped<IUnitOfWork>(sp =>
             sp.GetRequiredService<SearchEngineDbContext>());

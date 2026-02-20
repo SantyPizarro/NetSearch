@@ -1,0 +1,91 @@
+﻿using SearchEngine.Application.Abstractions.Persistence;
+using SearchEngine.Application.Abstractions.Services;
+using SearchEngine.Domain.Indexing;
+using SearchEngine.Domain.Search;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using System.Collections.Generic;
+using System.Linq;
+
+
+namespace SearchEngine.Infrastructure.Search;
+
+public sealed class SearchService : ISearchService
+{
+    private readonly IIndexRepository _indexRepository;
+    private readonly IDocumentRepository _documentRepository;
+    private readonly ITermRepository _termRepository;
+    private readonly IRankingStrategy _rankingStrategy;
+
+    public SearchService(
+        IIndexRepository indexRepository,
+        IDocumentRepository documentRepository,
+        ITermRepository termRepository,
+        IRankingStrategy rankingStrategy)
+    {
+        _indexRepository = indexRepository;
+        _documentRepository = documentRepository;
+        _termRepository = termRepository;
+        _rankingStrategy = rankingStrategy;
+    }
+
+    public async Task<IReadOnlyCollection<SearchResult>> SearchAsync(
+        SearchQuery query,
+        CancellationToken cancellationToken = default)
+    {
+        var termEntities = new List<Term>();
+        foreach (var termValue in query.Terms)
+        {
+            var term = await _termRepository.GetByValueAsync(termValue, cancellationToken);
+            if (term is not null)
+                termEntities.Add(term);
+        }
+
+        if (termEntities.Count == 0)
+            return Array.Empty<SearchResult>();
+
+        var allEntries = new List<IndexEntry>();
+        foreach (var term in termEntities)
+        {
+            var entries = await _indexRepository.GetByTermIdAsync(term.Id, cancellationToken);
+            allEntries.AddRange(entries);
+        }
+
+        var groupedByDocument = allEntries
+            .GroupBy(e => e.DocumentId);
+
+        var totalDocuments = await _documentRepository.CountAsync(cancellationToken);
+
+        var results = new List<SearchResult>();
+
+        foreach (var group in groupedByDocument)
+        {
+            if (query.Operator == OperatorType.And)
+            {
+                var containsAll = termEntities.All(t => group.Any(e => e.TermId == t.Id));
+                if (!containsAll)
+                    continue;
+            }
+
+            var document = await _documentRepository.GetByIdAsync(group.Key, cancellationToken);
+            if (document is null)
+                continue;
+
+            double score = 0;
+
+            foreach (var term in termEntities)
+            {
+                var entry = group.FirstOrDefault(e => e.TermId == term.Id);
+                if (entry is not null)
+                {
+                    score += _rankingStrategy.CalculateScore(term, entry.TermFrequency, totalDocuments);
+                }
+            }
+
+            results.Add(new SearchResult(document, score));
+        }
+
+        return results
+            .OrderByDescending(x => x.Score)
+            .ToList();
+    }
+}

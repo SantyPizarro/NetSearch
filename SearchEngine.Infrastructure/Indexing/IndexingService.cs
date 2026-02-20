@@ -3,9 +3,9 @@ using SearchEngine.Application.Abstractions.Services;
 using SearchEngine.Domain.Documents;
 using SearchEngine.Domain.Indexing;
 
-namespace SearchEngine.Application.Indexing.Services;
+namespace SearchEngine.Infrastructure.Indexing;
 
-public sealed class IndexingService
+public sealed class IndexingService : IIndexingService
 {
     private readonly ITermRepository _termRepository;
     private readonly IIndexRepository _indexRepository;
@@ -24,7 +24,7 @@ public sealed class IndexingService
         _unitOfWork = unitOfWork;
     }
 
-    public async Task IndexDocumentAsync(
+    public async Task IndexAsync(
         Document document,
         CancellationToken cancellationToken = default)
     {

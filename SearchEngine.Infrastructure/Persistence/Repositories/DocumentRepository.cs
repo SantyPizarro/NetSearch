@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SearchEngine.Application.Abstractions.Persistence;
 using SearchEngine.Domain.Documents;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace SearchEngine.Infrastructure.Persistence.Repositories;
 
@@ -37,5 +38,10 @@ internal sealed class DocumentRepository : IDocumentRepository
     public void Remove(Document document)
     {
         _context.Documents.Remove(document);
+    }
+
+    public async Task<int> CountAsync(CancellationToken cancellationToken = default)
+    {
+        return await _context.Documents.CountAsync(cancellationToken);
     }
 }

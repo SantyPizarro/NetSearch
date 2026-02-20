@@ -1,4 +1,6 @@
 ﻿using SearchEngine.Domain.Documents;
+using static System.Net.Mime.MediaTypeNames;
+
 
 namespace SearchEngine.Application.Abstractions.Persistence;
 
@@ -11,4 +13,6 @@ public interface IDocumentRepository
     void Update(Document document);
 
     void Remove(Document document);
+
+    Task<int> CountAsync(CancellationToken cancellationToken = default);
 }

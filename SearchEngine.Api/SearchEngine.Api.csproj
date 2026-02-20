@@ -7,12 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentAssertions" Version="8.8.0" />
+    <PackageReference Include="MediatR" Version="14.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Contracts\" />
-    <Folder Include="Middlewares\" />
   </ItemGroup>
 
 	<ItemGroup>
