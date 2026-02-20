@@ -1,10 +1,10 @@
 ﻿using SearchEngine.Domain.Common;
 
-namespace SearchEngine.Domain.Documents;
-
 public sealed class Tag : ValueObject
 {
-    public string Value { get; }
+    public string Value { get; private set; } = null!;
+
+    private Tag() { }
 
     private Tag(string value)
     {

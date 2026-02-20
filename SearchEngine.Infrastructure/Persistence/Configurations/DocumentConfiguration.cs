@@ -2,15 +2,11 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SearchEngine.Domain.Documents;
 
-namespace SearchEngine.Infrastructure.Persistence.Configurations;
-
 public sealed class DocumentConfiguration
     : IEntityTypeConfiguration<Document>
 {
     public void Configure(EntityTypeBuilder<Document> builder)
     {
-        builder.ToTable("Documents");
-
         builder.HasKey(d => d.Id);
 
         builder.Property(d => d.Id)
@@ -21,44 +17,39 @@ public sealed class DocumentConfiguration
 
         builder.Property(d => d.Title)
             .IsRequired()
-            .HasMaxLength(300);
+            .HasMaxLength(200);
 
         builder.Property(d => d.Content)
             .IsRequired();
 
-        builder.Property(d => d.CreatedAt)
-            .IsRequired();
+        builder.Property(d => d.CreatedAt);
+        builder.Property(d => d.UpdatedAt);
 
-        builder.Property(d => d.UpdatedAt)
-            .IsRequired();
-
-        builder.OwnsOne(d => d.Metadata, metadata =>
+        builder.OwnsOne(d => d.Metadata, metadataBuilder =>
         {
-            metadata.Property(m => m.Author)
-                .HasMaxLength(200)
-                .HasColumnName("Author");
+            metadataBuilder.Property(m => m.Author)
+                .HasMaxLength(200);
 
-            metadata.Property(m => m.Category)
-                .HasMaxLength(200)
-                .HasColumnName("Category");
+            metadataBuilder.Property(m => m.Category)
+                .HasMaxLength(200);
         });
 
-        builder.OwnsMany(d => d.Tags, tags =>
+        builder.OwnsMany<Tag>("_tags", tagBuilder =>
         {
-            tags.ToTable("DocumentTags");
+            tagBuilder.ToTable("DocumentTags");
 
-            tags.WithOwner()
+            tagBuilder.WithOwner()
                 .HasForeignKey("DocumentId");
 
-            tags.Property(t => t.Value)
-                .HasColumnName("Tag")
-                .IsRequired()
-                .HasMaxLength(100);
+            tagBuilder.Property<int>("Id");
+            tagBuilder.HasKey("Id");
 
-            tags.HasKey("DocumentId", "Tag");
+            tagBuilder.Property(t => t.Value)
+                .HasColumnName("Value")
+                .IsRequired();
         });
 
-        builder.Navigation(d => d.Tags)
+        builder.Navigation("_tags")
             .UsePropertyAccessMode(PropertyAccessMode.Field);
     }
 }

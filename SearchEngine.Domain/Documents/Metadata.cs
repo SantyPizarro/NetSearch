@@ -1,11 +1,11 @@
 ﻿using SearchEngine.Domain.Common;
 
-namespace SearchEngine.Domain.Documents;
-
 public sealed class Metadata : ValueObject
 {
-    public string? Author { get; }
-    public string? Category { get; }
+    public string? Author { get; private set; }
+    public string? Category { get; private set; }
+
+    private Metadata() { }
 
     private Metadata(string? author, string? category)
     {

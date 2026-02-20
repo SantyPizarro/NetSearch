@@ -32,6 +32,7 @@ public static class DependencyInjection
 
         services.AddScoped<ISearchService, SearchService>();
 
+
         services.AddScoped<IUnitOfWork>(sp =>
             sp.GetRequiredService<SearchEngineDbContext>());
 

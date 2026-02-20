@@ -31,7 +31,6 @@ public sealed class SearchService : ISearchService
         if (query.Terms.Count == 0)
             return Array.Empty<SearchResult>();
 
-        // 1️⃣ Resolver entidades Term
         var termEntities = new List<Term>();
 
         foreach (var termValue in query.Terms)
@@ -46,7 +45,6 @@ public sealed class SearchService : ISearchService
         if (termEntities.Count == 0)
             return Array.Empty<SearchResult>();
 
-        // 2️⃣ Obtener entradas del índice
         var allEntries = new List<IndexEntry>();
 
         foreach (var term in termEntities)
@@ -60,7 +58,6 @@ public sealed class SearchService : ISearchService
         if (allEntries.Count == 0)
             return Array.Empty<SearchResult>();
 
-        // 3️⃣ Agrupar por documento
         var groupedByDocument = allEntries
             .GroupBy(e => e.DocumentId);
 
@@ -74,7 +71,6 @@ public sealed class SearchService : ISearchService
 
         foreach (var group in groupedByDocument)
         {
-            // 4️⃣ Operador AND
             if (query.Operator == OperatorType.And)
             {
                 var containsAllTerms = termEntities
