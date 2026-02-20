@@ -13,12 +13,17 @@ internal sealed class TermRepository : ITermRepository
         _context = context;
     }
 
-    public async Task<Term?> GetByValueAsync(
-        string value,
+    public async Task<List<Term>> GetByValuesAsync(
+        IEnumerable<string> values,
         CancellationToken cancellationToken = default)
     {
+        var normalized = values
+            .Select(v => v.Trim().ToLowerInvariant())
+            .ToList();
+
         return await _context.Terms
-            .FirstOrDefaultAsync(t => t.Value == value.ToLower(), cancellationToken);
+            .Where(t => normalized.Contains(t.Value))
+            .ToListAsync(cancellationToken);
     }
 
     public async Task<Term?> GetByIdAsync(

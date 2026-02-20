@@ -21,8 +21,8 @@ public sealed class CreateDocumentHandler
     }
 
     public async Task<Guid> Handle(
-        CreateDocumentCommand request,
-        CancellationToken cancellationToken)
+    CreateDocumentCommand request,
+    CancellationToken cancellationToken)
     {
         var document = Document.Create(
             request.Title,
@@ -32,6 +32,8 @@ public sealed class CreateDocumentHandler
             request.Category);
 
         await _documentRepository.AddAsync(document, cancellationToken);
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         await _indexingService.IndexAsync(document, cancellationToken);
 

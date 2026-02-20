@@ -25,8 +25,8 @@ public sealed class IndexingService : IIndexingService
     }
 
     public async Task IndexAsync(
-        Document document,
-        CancellationToken cancellationToken = default)
+    Document document,
+    CancellationToken cancellationToken = default)
     {
         await _indexRepository.DeleteByDocumentIdAsync(
             document.Id,
@@ -41,19 +41,25 @@ public sealed class IndexingService : IIndexingService
             .GroupBy(t => t)
             .ToDictionary(g => g.Key, g => g.Count());
 
+        var termValues = termFrequencies.Keys.ToList();
+
+        var existingTerms = await _termRepository
+            .GetByValuesAsync(termValues, cancellationToken);
+
+        var existingDictionary = existingTerms
+            .ToDictionary(t => t.Value, t => t);
+
         foreach (var (termValue, frequency) in termFrequencies)
         {
-            var term = await _termRepository
-                .GetByValueAsync(termValue, cancellationToken);
-
-            if (term is null)
+            if (!existingDictionary.TryGetValue(termValue, out var term))
             {
                 term = Term.Create(termValue);
                 await _termRepository.AddAsync(term, cancellationToken);
             }
-
-            term.IncrementDocumentFrequency();
-            await _termRepository.UpdateAsync(term, cancellationToken);
+            else
+            {
+                term.IncrementDocumentFrequency();
+            }
 
             var entry = IndexEntry.Create(
                 term.Id,
