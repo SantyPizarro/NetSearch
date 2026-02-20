@@ -34,6 +34,8 @@ public sealed class DocumentConfiguration
                 .HasMaxLength(200);
         });
 
+        builder.Ignore(d => d.Tags);
+
         builder.OwnsMany<Tag>("_tags", tagBuilder =>
         {
             tagBuilder.ToTable("DocumentTags");
