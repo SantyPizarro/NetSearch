@@ -1,12 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
-using System.IO;
-using System.IO;
+using Microsoft.Extensions.DependencyInjection;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace SearchEngine.Infrastructure.Persistence;
 
-public sealed class SearchEngineDbContextFactory 
+public sealed class SearchEngineDbContextFactory
     : IDesignTimeDbContextFactory<SearchEngineDbContext>
 {
     public SearchEngineDbContext CreateDbContext(string[] args)
@@ -22,9 +23,15 @@ public sealed class SearchEngineDbContextFactory
             .GetConnectionString("DefaultConnection");
 
         var optionsBuilder = new DbContextOptionsBuilder<SearchEngineDbContext>();
-
         optionsBuilder.UseSqlServer(connectionString);
 
-        return new SearchEngineDbContext(optionsBuilder.Options);
+        var services = new ServiceCollection();
+
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateDocumentCommand).Assembly));
+
+        var provider = services.BuildServiceProvider();
+        var mediator = provider.GetService<IMediator>();
+
+        return new SearchEngineDbContext(optionsBuilder.Options, mediator);
     }
 }
