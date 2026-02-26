@@ -1,9 +1,11 @@
 ﻿using MediatR;
 using SearchEngine.Domain.Search;
 
-namespace SearchEngine.Application.Search.Queries;
-
 public sealed record SearchDocumentsQuery(
     string Query,
-    OperatorType Operator = OperatorType.Or
-) : IRequest<IReadOnlyCollection<SearchResult>>;
+    OperatorType Operator,
+    string? Category,
+    string? Author,
+    int Page,
+    int PageSize)
+    : IRequest<PagedSearchResponse>;

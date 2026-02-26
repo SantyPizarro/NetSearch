@@ -17,17 +17,22 @@ public sealed class SearchController : ControllerBase
         _mediator = mediator;
     }
 
-    [HttpGet]
+    [HttpPost]
     public async Task<IActionResult> Search(
-        [FromQuery(Name = "q")] string query,
-        [FromQuery] OperatorType operatorType = OperatorType.Or,
-        CancellationToken cancellationToken = default)
+        [FromBody] SearchRequest request,
+        CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(query))
+        if (string.IsNullOrWhiteSpace(request.Query))
             return BadRequest("Query cannot be empty.");
 
         var result = await _mediator.Send(
-            new SearchDocumentsQuery(query, operatorType),
+            new SearchDocumentsQuery(
+                request.Query,
+                request.Operator,
+                request.Category,
+                request.Author,
+                request.Page,
+                request.PageSize),
             cancellationToken);
 
         return Ok(result);

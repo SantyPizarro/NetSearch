@@ -1,12 +1,12 @@
 ﻿using MediatR;
 using SearchEngine.Application.Abstractions.Services;
-using SearchEngine.Application.Search.Queries;
 using SearchEngine.Domain.Search;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace SearchEngine.Application.Search.Handlers;
 
 public sealed class SearchDocumentsHandler
-    : IRequestHandler<SearchDocumentsQuery, IReadOnlyCollection<SearchResult>>
+    : IRequestHandler<SearchDocumentsQuery, PagedSearchResponse>
 {
     private readonly ISearchService _searchService;
     private readonly ITokenizer _tokenizer;
@@ -19,7 +19,7 @@ public sealed class SearchDocumentsHandler
         _tokenizer = tokenizer;
     }
 
-    public async Task<IReadOnlyCollection<SearchResult>> Handle(
+    public async Task<PagedSearchResponse> Handle(
         SearchDocumentsQuery request,
         CancellationToken cancellationToken)
     {
@@ -30,6 +30,71 @@ public sealed class SearchDocumentsHandler
             terms,
             request.Operator);
 
-        return await _searchService.SearchAsync(searchQuery, cancellationToken);
+        var results = (await _searchService.SearchAsync(searchQuery, cancellationToken)).ToList();
+
+        if (!string.IsNullOrWhiteSpace(request.Category))
+            results = results
+                .Where(r => string.Equals(r.Document.Metadata.Category, request.Category, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+        if (!string.IsNullOrWhiteSpace(request.Author))
+            results = results
+                .Where(r => string.Equals(r.Document.Metadata.Author, request.Author, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+        var total = results.Count;
+
+        var paged = results
+            .Skip(Math.Max(0, request.Page - 1) * request.PageSize)
+            .Take(request.PageSize)
+            .ToList();
+
+        var mapped = paged.Select(r => new SearchResponse
+        {
+            DocumentId = r.Document.Id.Value,
+            Title = r.Document.Title,
+            Score = r.Score,
+            Snippet = BuildSnippet(r.Document.Content, request.Query)
+        }).ToList();
+
+        return new PagedSearchResponse
+        {
+            Total = total,
+            Page = request.Page,
+            PageSize = request.PageSize,
+            Results = mapped
+        };
+    }
+
+    private static string BuildSnippet(string content, string query)
+    {
+        if (string.IsNullOrWhiteSpace(content))
+            return string.Empty;
+
+        var terms = query
+            .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+        foreach (var term in terms)
+        {
+            var index = content
+                .IndexOf(term, StringComparison.OrdinalIgnoreCase);
+
+            if (index >= 0)
+            {
+                var start = Math.Max(index - 40, 0);
+                var length = Math.Min(120, content.Length - start);
+
+                var snippet = content.Substring(start, length);
+
+                return snippet.Replace(
+                    term,
+                    $"<b>{term}</b>",
+                    StringComparison.OrdinalIgnoreCase);
+            }
+        }
+
+        return content.Length > 120
+            ? content.Substring(0, 120)
+            : content;
     }
 }

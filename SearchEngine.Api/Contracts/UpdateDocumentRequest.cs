@@ -1,6 +1,9 @@
-﻿namespace SearchEngine.Api.Contracts
-{
-    public class UpdateDocumentRequest
-    {
-    }
-}
+﻿namespace SearchEngine.Api.Contracts.Requests;
+
+public sealed record UpdateDocumentRequest(
+    string Title,
+    string Content,
+    IEnumerable<string> Tags,
+    string? Author,
+    string? Category
+);
