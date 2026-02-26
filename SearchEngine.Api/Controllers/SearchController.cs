@@ -30,13 +30,6 @@ public sealed class SearchController : ControllerBase
             new SearchDocumentsQuery(query, operatorType),
             cancellationToken);
 
-        var response = result.Select(r => new SearchResponse
-        {
-            DocumentId = r.Document.Id.Value,
-            Title = r.Document.Title,
-            Score = r.Score
-        }).ToList();
-
-        return Ok(response);
+        return Ok(result);
     }
 }

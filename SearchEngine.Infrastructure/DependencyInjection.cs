@@ -8,6 +8,7 @@ using SearchEngine.Infrastructure.Search;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using Microsoft.EntityFrameworkCore;
 using SearchEngine.Infrastructure.Indexing;
+using SearchEngine.Application.Search.Handlers;
 
 namespace SearchEngine.Infrastructure;
 
@@ -32,6 +33,7 @@ public static class DependencyInjection
 
         services.AddScoped<ISearchService, SearchService>();
 
+        services.AddTransient<SearchDocumentsHandler>();
 
         services.AddScoped<IUnitOfWork>(sp =>
             sp.GetRequiredService<SearchEngineDbContext>());

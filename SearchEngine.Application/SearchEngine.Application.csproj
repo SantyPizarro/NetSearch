@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Documents\Handlers\" />
     <Folder Include="Indexing\" />
   </ItemGroup>
 

@@ -54,4 +54,11 @@ internal sealed class DocumentRepository : IDocumentRepository
     {
         return await _context.Documents.CountAsync(cancellationToken);
     }
+    public async Task<List<Document>> GetAllAsync(
+    CancellationToken cancellationToken)
+    {
+        return await _context.Documents
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+    }
 }
