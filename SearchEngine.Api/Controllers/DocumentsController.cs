@@ -1,6 +1,10 @@
-﻿using MediatR;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using SearchEngine.Api.Contracts.Requests;
+using SearchEngine.Application.Documents.Commands;
+using SearchEngine.Application.Documents.Queries;
+
+namespace SearchEngine.Api.Controllers;
 
 [ApiController]
 [Route("api/documents")]
@@ -41,7 +45,7 @@ public class DocumentsController : ControllerBase
 
     [HttpPost]
     public async Task<IActionResult> Create(
-        CreateDocumentRequest request,
+        [FromBody] CreateDocumentRequest request,
         CancellationToken cancellationToken)
     {
         var id = await _mediator.Send(
@@ -62,7 +66,7 @@ public class DocumentsController : ControllerBase
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(
         Guid id,
-        UpdateDocumentRequest request,
+        [FromBody] UpdateDocumentRequest request,
         CancellationToken cancellationToken)
     {
         await _mediator.Send(

@@ -1,5 +1,7 @@
-﻿using MediatR;
-using static System.Net.Mime.MediaTypeNames;
+using MediatR;
+
+namespace SearchEngine.Application.Documents.Commands;
+
 public sealed record UpdateDocumentCommand(
     Guid Id,
     string Title,

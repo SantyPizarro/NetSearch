@@ -1,7 +1,10 @@
-﻿using MediatR;
+using MediatR;
 using SearchEngine.Application.Abstractions.Persistence;
 using SearchEngine.Application.Abstractions.Services;
+using SearchEngine.Application.Documents.Commands;
 using SearchEngine.Domain.Documents;
+
+namespace SearchEngine.Application.Documents.Handlers;
 
 public sealed class CreateDocumentHandler
     : IRequestHandler<CreateDocumentCommand, Guid>
@@ -21,8 +24,8 @@ public sealed class CreateDocumentHandler
     }
 
     public async Task<Guid> Handle(
-    CreateDocumentCommand request,
-    CancellationToken cancellationToken)
+        CreateDocumentCommand request,
+        CancellationToken cancellationToken)
     {
         var document = Document.Create(
             request.Title,

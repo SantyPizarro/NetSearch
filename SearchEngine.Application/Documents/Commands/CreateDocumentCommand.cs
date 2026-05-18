@@ -1,4 +1,6 @@
-﻿using MediatR;
+using MediatR;
+
+namespace SearchEngine.Application.Documents.Commands;
 
 public sealed record CreateDocumentCommand(
     string Title,

@@ -1,7 +1,8 @@
-﻿using MediatR;
+using MediatR;
 using SearchEngine.Application.Abstractions.Services;
+using SearchEngine.Application.Search.Queries;
 using SearchEngine.Domain.Search;
-using static System.Net.Mime.MediaTypeNames;
+using SearchEngine.Domain.Search.Responses;
 
 namespace SearchEngine.Application.Search.Handlers;
 
@@ -23,6 +24,8 @@ public sealed class SearchDocumentsHandler
         SearchDocumentsQuery request,
         CancellationToken cancellationToken)
     {
+        var page = Math.Max(1, request.Page);
+        var pageSize = Math.Clamp(request.PageSize, 1, 100);
         var terms = _tokenizer.Tokenize(request.Query);
 
         var searchQuery = new SearchQuery(
@@ -45,8 +48,8 @@ public sealed class SearchDocumentsHandler
         var total = results.Count;
 
         var paged = results
-            .Skip(Math.Max(0, request.Page - 1) * request.PageSize)
-            .Take(request.PageSize)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .ToList();
 
         var mapped = paged.Select(r => new SearchResponse
@@ -60,8 +63,8 @@ public sealed class SearchDocumentsHandler
         return new PagedSearchResponse
         {
             Total = total,
-            Page = request.Page,
-            PageSize = request.PageSize,
+            Page = page,
+            PageSize = pageSize,
             Results = mapped
         };
     }

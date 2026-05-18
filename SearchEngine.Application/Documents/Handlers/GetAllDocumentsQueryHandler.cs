@@ -1,6 +1,9 @@
-﻿using MediatR;
+using MediatR;
 using SearchEngine.Application.Abstractions.Persistence;
+using SearchEngine.Application.Documents.Queries;
 using SearchEngine.Domain.Documents;
+
+namespace SearchEngine.Application.Documents.Handlers;
 
 internal sealed class GetAllDocumentsQueryHandler
     : IRequestHandler<GetAllDocumentsQuery, List<Document>>

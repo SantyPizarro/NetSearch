@@ -1,6 +1,54 @@
 @SearchEngine.Api_HostAddress = http://localhost:5015
+@DocumentId = 00000000-0000-0000-0000-000000000000
 
-GET {{SearchEngine.Api_HostAddress}}/weatherforecast/
+### Swagger UI
+# Abrir en navegador:
+# {{SearchEngine.Api_HostAddress}}/swagger
+
+### Crear documento
+POST {{SearchEngine.Api_HostAddress}}/api/documents
+Content-Type: application/json
+
+{
+  "title": "Introduccion a busqueda",
+  "content": "Este documento explica search engines, indexing y ranking con tf idf.",
+  "tags": ["search", "dotnet"],
+  "author": "Ada",
+  "category": "Tech"
+}
+
+### Listar documentos
+GET {{SearchEngine.Api_HostAddress}}/api/documents
 Accept: application/json
 
-###
+### Obtener documento por id
+GET {{SearchEngine.Api_HostAddress}}/api/documents/{{DocumentId}}
+Accept: application/json
+
+### Buscar documentos
+POST {{SearchEngine.Api_HostAddress}}/api/search
+Content-Type: application/json
+
+{
+  "query": "search indexing",
+  "operator": "Or",
+  "category": "Tech",
+  "author": "Ada",
+  "page": 1,
+  "pageSize": 10
+}
+
+### Actualizar documento
+PUT {{SearchEngine.Api_HostAddress}}/api/documents/{{DocumentId}}
+Content-Type: application/json
+
+{
+  "title": "Introduccion a busqueda actualizada",
+  "content": "Contenido actualizado para validar reindexado del motor de busqueda.",
+  "tags": ["search", "ranking"],
+  "author": "Ada",
+  "category": "Tech"
+}
+
+### Eliminar documento
+DELETE {{SearchEngine.Api_HostAddress}}/api/documents/{{DocumentId}}

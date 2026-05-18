@@ -1,7 +1,9 @@
-﻿using MediatR;
+using MediatR;
 using SearchEngine.Application.Abstractions.Persistence;
+using SearchEngine.Application.Documents.Queries;
 using SearchEngine.Domain.Documents;
-using static System.Net.Mime.MediaTypeNames;
+
+namespace SearchEngine.Application.Documents.Handlers;
 
 internal sealed class GetDocumentByIdQueryHandler
     : IRequestHandler<GetDocumentByIdQuery, Document?>

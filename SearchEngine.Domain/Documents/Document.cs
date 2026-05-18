@@ -7,10 +7,10 @@ public sealed class Document : Entity<DocumentId>
 {
     private readonly List<Tag> _tags = new();
 
-    public string Title { get; private set; }
-    public string Content { get; private set; }
+    public string Title { get; private set; } = default!;
+    public string Content { get; private set; } = default!;
     public IReadOnlyCollection<Tag> Tags => _tags.AsReadOnly();
-    public Metadata Metadata { get; private set; }
+    public Metadata Metadata { get; private set; } = default!;
 
     public DateTime CreatedAt { get; private set; }
     public DateTime UpdatedAt { get; private set; }

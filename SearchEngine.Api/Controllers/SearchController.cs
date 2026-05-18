@@ -1,8 +1,7 @@
-﻿using MediatR;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using SearchEngine.Api.Contracts.Responses;
+using SearchEngine.Api.Contracts.Requests;
 using SearchEngine.Application.Search.Queries;
-using SearchEngine.Domain.Search;
 
 namespace SearchEngine.Api.Controllers;
 
@@ -24,6 +23,12 @@ public sealed class SearchController : ControllerBase
     {
         if (string.IsNullOrWhiteSpace(request.Query))
             return BadRequest("Query cannot be empty.");
+
+        if (request.Page < 1)
+            return BadRequest("Page must be greater than or equal to 1.");
+
+        if (request.PageSize is < 1 or > 100)
+            return BadRequest("PageSize must be between 1 and 100.");
 
         var result = await _mediator.Send(
             new SearchDocumentsQuery(

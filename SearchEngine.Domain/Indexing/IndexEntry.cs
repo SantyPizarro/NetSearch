@@ -5,8 +5,8 @@ namespace SearchEngine.Domain.Indexing;
 
 public sealed class IndexEntry : Entity<Guid>
 {
-    public TermId TermId { get; private set; }
-    public DocumentId DocumentId { get; private set; }
+    public TermId TermId { get; private set; } = default!;
+    public DocumentId DocumentId { get; private set; } = default!;
     public int TermFrequency { get; private set; }
 
     private IndexEntry() { } // EF

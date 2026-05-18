@@ -1,8 +1,8 @@
-﻿using MediatR;
+using MediatR;
 using SearchEngine.Application.Abstractions.Persistence;
 using SearchEngine.Application.Abstractions.Services;
+using SearchEngine.Application.Documents.Commands;
 using SearchEngine.Domain.Documents;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace SearchEngine.Application.Documents.Handlers;
 

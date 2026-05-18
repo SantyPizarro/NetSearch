@@ -1,4 +1,4 @@
-﻿using SearchEngine.Application.Abstractions.Persistence;
+using SearchEngine.Application.Abstractions.Persistence;
 using SearchEngine.Application.Abstractions.Services;
 using SearchEngine.Domain.Documents;
 using SearchEngine.Domain.Indexing;
@@ -25,9 +25,24 @@ public sealed class IndexingService : IIndexingService
     }
 
     public async Task IndexAsync(
-    Document document,
-    CancellationToken cancellationToken = default)
+        Document document,
+        CancellationToken cancellationToken = default)
     {
+        var existingEntries = await _indexRepository.GetByDocumentIdAsync(
+            document.Id,
+            cancellationToken);
+
+        foreach (var termId in existingEntries.Select(e => e.TermId).Distinct())
+        {
+            var term = await _termRepository.GetByIdAsync(termId, cancellationToken);
+
+            if (term is null)
+                continue;
+
+            term.DecrementDocumentFrequency();
+            await _termRepository.UpdateAsync(term, cancellationToken);
+        }
+
         await _indexRepository.DeleteByDocumentIdAsync(
             document.Id,
             cancellationToken);
@@ -35,7 +50,10 @@ public sealed class IndexingService : IIndexingService
         var tokens = _tokenizer.Tokenize(document.Content);
 
         if (tokens.Count == 0)
+        {
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
             return;
+        }
 
         var termFrequencies = tokens
             .GroupBy(t => t)
@@ -56,10 +74,9 @@ public sealed class IndexingService : IIndexingService
                 term = Term.Create(termValue);
                 await _termRepository.AddAsync(term, cancellationToken);
             }
-            else
-            {
-                term.IncrementDocumentFrequency();
-            }
+
+            term.IncrementDocumentFrequency();
+            await _termRepository.UpdateAsync(term, cancellationToken);
 
             var entry = IndexEntry.Create(
                 term.Id,

@@ -1,4 +1,6 @@
-﻿using SearchEngine.Domain.Search;
+using SearchEngine.Domain.Search;
+
+namespace SearchEngine.Api.Contracts.Requests;
 
 public sealed class SearchRequest
 {

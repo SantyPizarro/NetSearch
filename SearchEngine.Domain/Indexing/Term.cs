@@ -4,7 +4,7 @@ namespace SearchEngine.Domain.Indexing;
 
 public sealed class Term : Entity<TermId>
 {
-    public string Value { get; private set; }
+    public string Value { get; private set; } = default!;
     public int DocumentFrequency { get; private set; }
 
     private Term() { } // EF

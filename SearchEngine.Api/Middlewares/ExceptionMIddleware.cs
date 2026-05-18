@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using System.Text.Json;
 
 namespace SearchEngine.Api.Middlewares;
@@ -20,7 +20,15 @@ public sealed class ExceptionMiddleware
         }
         catch (Exception ex)
         {
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            var statusCode = ex switch
+            {
+                KeyNotFoundException => HttpStatusCode.NotFound,
+                ArgumentException => HttpStatusCode.BadRequest,
+                _ => HttpStatusCode.InternalServerError
+            };
+
+            context.Response.StatusCode = (int)statusCode;
+            context.Response.ContentType = "application/json";
 
             var response = new
             {

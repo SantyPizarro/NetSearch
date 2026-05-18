@@ -34,7 +34,7 @@ public sealed class SearchEngineDbContext
         base.OnModelCreating(modelBuilder);
     }
 
-    public async Task<int> SaveChangesAsync(
+    public override async Task<int> SaveChangesAsync(
         CancellationToken cancellationToken = default)
     {
         var result = await base.SaveChangesAsync(cancellationToken);
